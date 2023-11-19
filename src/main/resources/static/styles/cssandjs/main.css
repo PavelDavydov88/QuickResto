@@ -1,6 +1,0 @@
-table.iksweb{text-decoration: none;border-collapse:collapse;width:auto;text-align:left;}
-table.iksweb th{font-weight:normal;font-size:22px; color:#ffffff;background-color:#348f00;}
-table.iksweb td{font-size:19px;color:#000000;}
-table.iksweb td,table.iksweb th{white-space:pre-wrap;padding:19px 51px;line-height:19px;vertical-align: middle;border: 1px solid #348f00;}
-table.iksweb tr:hover{background-color:#f9fafb}
-table.iksweb tr:hover td{color:#354251;cursor:default;}

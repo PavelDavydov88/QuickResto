@@ -5,13 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Таблицы</title>
-    <style> table.iksweb td, table.iksweb th {
+    <style> table.google td, table.google th {
         background-color: #348f00;
     }
     </style>
 </head>
 <body>
-<table class="iksweb">
+<table class="google">
     <tr>
         <th style="background-color: white"></th> <!-- Пустая ячейка в левом верхнем углу -->
         <th th:each="col : ${#numbers.sequence(0, 3)}"
@@ -28,8 +28,5 @@
     </tr>
 </table>
 
-<!--<form method="post" th:action="@{/calculateTable}">-->
-<!--    <button type="submit">Рассчитать таблицу</button>-->
-<!--</form>-->
 </body>
 </html>
