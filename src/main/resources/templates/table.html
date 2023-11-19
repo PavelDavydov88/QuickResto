@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Таблицы</title>
+    <style> table.iksweb td, table.iksweb th {
+        background-color: #348f00;
+    }
+    </style>
+</head>
+<body>
+<table class="iksweb">
+    <tr>
+        <th style="background-color: white"></th> <!-- Пустая ячейка в левом верхнем углу -->
+        <th th:each="col : ${#numbers.sequence(0, 3)}"
+            th:text="${#strings.toUpperCase(#strings.substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ', col, col+1))}"></th>
+    </tr>
+    <tr th:each="row, rowStat : ${table}">
+        <td th:text="${rowStat.index + 1}"></td>
+        <td th:each="cell, colStat : ${row}">
+            <form method="post" th:action="@{'/updateCell/' + ${rowStat.index} + '/' + ${colStat.index}}">
+                <input type="text" th:value="${cell != null ? cell.value : ''}" name="value"
+                       onblur="this.form.submit()" >
+            </form>
+        </td>
+    </tr>
+</table>
+
+<!--<form method="post" th:action="@{/calculateTable}">-->
+<!--    <button type="submit">Рассчитать таблицу</button>-->
+<!--</form>-->
+</body>
+</html>
