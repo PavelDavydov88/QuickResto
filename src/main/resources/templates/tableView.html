@@ -8,12 +8,22 @@
     <style> table.google td, table.google th {
         background-color: #348f00;
     }
+
+    h1 {
+        font-family: 'Times New Roman', Times, serif; /* Гарнитура текста */
+        font-size: 12pt; /* Размер шрифта в процентах */
+    }
+
+    p {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 10pt; /* Размер шрифта в пунктах */
+    }
     </style>
 </head>
 <body>
 <table class="google">
     <tr>
-        <th style="background-color: white"></th> <!-- Пустая ячейка в левом верхнем углу -->
+        <th style="background-color: white"></th>
         <th th:each="col : ${#numbers.sequence(0, 3)}"
             th:text="${#strings.toUpperCase(#strings.substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ', col, col+1))}"></th>
     </tr>
@@ -22,11 +32,14 @@
         <td th:each="cell, colStat : ${row}">
             <form method="post" th:action="@{'/updateCell/' + ${rowStat.index} + '/' + ${colStat.index}}">
                 <input type="text" th:value="${cell != null ? cell.value : ''}" name="value"
-                       onblur="this.form.submit()" >
+                       onblur="this.form.submit()">
             </form>
         </td>
     </tr>
 </table>
+<h1>Example for input, available math symbol +-/*() </h1>
+<p> А1 = 5 * ( 2 + 3 )</p>
+<p> B1 = 5 * ( A1 + 3 )</p>
 
 </body>
 </html>

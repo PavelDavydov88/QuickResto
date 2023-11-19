@@ -14,23 +14,20 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
 
     private final Cell[][] table = new Cell[4][4];
 
-    @Override
-    public boolean isCellReference(String token) {
+    private boolean isCellReference(String token) {
         return token.matches("[A-Za-z]+\\d+");
     }
 
-    @Override
-    public String[] parseCellReference(String token) {
+
+    private String[] parseCellReference(String token) {
         return token.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
     }
 
-    @Override
-    public boolean isOperator(String token) {
+    private boolean isOperator(String token) {
         return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
     }
 
-    @Override
-    public double applyOperator(String operator, double operand1, double operand2) {
+    private double applyOperator(String operator, double operand1, double operand2) {
         switch (operator) {
             case "+" -> {
                 return operand1 + operand2;
@@ -52,26 +49,27 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
         }
     }
 
-    @Override
-    public String evaluatePostfix(List<String> tokens) {
-        Deque<String> stack = new ArrayDeque<>();
-
-        for (String token : tokens) {
-            if (isOperator(token)) {
-                double operand2 = Double.parseDouble(stack.pop());
-                double operand1 = Double.parseDouble(stack.pop());
-                double result = applyOperator(token, operand1, operand2);
-                stack.push(String.valueOf(result));
-            } else {
-                stack.push(token);
+    private String evaluatePostfix(List<String> tokens) {
+        try {
+            Deque<String> stack = new ArrayDeque<>();
+            for (String token : tokens) {
+                if (isOperator(token)) {
+                    double operand2 = Double.parseDouble(stack.pop());
+                    double operand1 = Double.parseDouble(stack.pop());
+                    double result = applyOperator(token, operand1, operand2);
+                    stack.push(String.valueOf(result));
+                } else {
+                    stack.push(token);
+                }
             }
+            return stack.pop();
+        } catch (Exception e) {
+            throw new ArithmeticException("Unknown operand");
         }
 
-        return stack.pop();
     }
 
-    @Override
-    public int getPrecedence(String operator) {
+    private int getPrecedence(String operator) {
         return switch (operator) {
             case "+", "-" -> 1;
             case "*", "/" -> 2;
@@ -79,24 +77,18 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
         };
     }
 
-    @Override
-    public String evaluateFormula(String formula, int rowIndex, int colIndex) {
+    private String evaluateFormula(String formula, int rowIndex, int colIndex) {
         List<String> tokens = Arrays.asList(formula.split(" "));
         List<String> output = new ArrayList<>();
         Deque<String> stack = new ArrayDeque<>();
-
         for (String token : tokens) {
             if (isCellReference(token)) {
                 String[] coordinates = parseCellReference(token);
                 int row = Integer.parseInt(coordinates[1]) - 1;
                 int col = coordinates[0].toUpperCase().charAt(0) - 'A';
-
-                // Проверяем, чтобы избежать зацикливания при саморекурсии
                 if (row == rowIndex && col == colIndex) {
                     throw new RuntimeException("Circular reference detected at cell: " + token);
                 }
-
-                // Рекурсивно вычисляем значение ячейки
                 String cellValue = evaluateFormula(table[row][col].getValue(), row, col);
                 output.add(cellValue);
             } else if (isOperator(token)) {
@@ -108,11 +100,9 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
                 output.add(token);
             }
         }
-
         while (!stack.isEmpty()) {
             output.add(stack.pop());
         }
-
         return evaluatePostfix(output);
     }
 
@@ -133,7 +123,6 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
                 Pattern pattern = Pattern.compile(patternString);
                 while (text.indexOf("(") != -1 && text.indexOf(")") != -1) {
                     Matcher matcher = pattern.matcher(text);
-
                     if (matcher.find()) {
                         String bracketFragment = matcher.group();
                         text = new StringBuilder(matcher.replaceFirst(evaluateFormula(bracketFragment.substring(1, bracketFragment.length() - 1), row, col)));
@@ -141,12 +130,11 @@ public class MathEvaluatorServiceImpl implements MathEvaluatorService {
                         log.info("No bracket fragments found.");
                     }
                 }
-
                 String result = evaluateFormula(text.toString(), row, col);
                 table[row][col] = new Cell(result);
             }
         } catch (Exception e) {
-            table[row][col] = new Cell("Error");
+            table[row][col] = new Cell("Error " + e.getMessage());
         }
 
     }

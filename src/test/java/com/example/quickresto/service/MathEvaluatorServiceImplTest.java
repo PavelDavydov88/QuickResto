@@ -1,62 +1,59 @@
 package com.example.quickresto.service;
 
 import com.example.quickresto.model.Cell;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MathEvaluatorServiceImplTest {
 
-    MathEvaluatorService mathEvaluatorService = new MathEvaluatorServiceImpl();
+    private MathEvaluatorService mathEvaluatorService;
 
-    Cell[][] table;
     @BeforeEach
-    void beforeAll() {
-      table = new Cell[4][4];
+    void setUp() {
+        mathEvaluatorService = new MathEvaluatorServiceImpl();
+        mathEvaluatorService.updateCell(0, 0, "4");
+        mathEvaluatorService.updateCell(0, 1, "6");
     }
 
-    @DisplayName("check that cell is reference")
+    @DisplayName("check that the cell has been updated")
     @ParameterizedTest
     @CsvSource({
-            "'123', false",
-            "'A1', true",
+            "0, 0, '= 5 + 5', '10.0'",
+            "0, 0, '= ( 5 + 5 ) * 5', '50.0'",
+            "0, 0, '= ( 5 + 5 ) * ( 10 - 8 ) / 2 ', '10.0'",
+            "0, 0, '= ( ( 5 + 5 ) * 2 - 1 ) * ( 10 - 8 ) / 2 ', '19.0'",
+            "0, 2, '= ( ( A1 + b1 ) * 2 - 1 ) * ( 10 - 8 ) / 2 ', '19.0'",
     })
-    void isCellReference(String token, boolean exceptedValue) {
-        Assertions.assertEquals(exceptedValue, mathEvaluatorService.isCellReference(token));
+    void updateCell(int row, int col, String value, String result) {
+        mathEvaluatorService.updateCell(row, col, value);
+        Cell cell = mathEvaluatorService.getTable()[row][col];
+        Assertions.assertEquals(result, cell.getValue());
     }
 
-    @Test
-    void parseCellReference() {
+    @DisplayName("check that the cell will be with Error text")
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0, '= 5 + a', 'Error Unknown operand'",
+    })
+    void updateCellWithError(int row, int col, String value, String result) {
+        mathEvaluatorService.updateCell(row, col, value);
+        Cell cell = mathEvaluatorService.getTable()[row][col];
+        Assertions.assertEquals(result, cell.getValue());
     }
 
-    @Test
-    void isOperator() {
+    @DisplayName("check that the cell will be with text")
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0, ' ( 5 + 5 ) * 5', ' ( 5 + 5 ) * 5'",
+    })
+    void updateCellWithText(int row, int col, String value, String result) {
+        mathEvaluatorService.updateCell(row, col, value);
+        Cell cell = mathEvaluatorService.getTable()[row][col];
+        Assertions.assertEquals(result, cell.getValue());
     }
 
-    @Test
-    void applyOperator() {
-    }
 
-    @Test
-    void evaluatePostfix() {
-    }
-
-    @Test
-    void getPrecedence() {
-    }
-
-    @Test
-    void evaluateFormula() {
-    }
-
-    @Test
-    void getTable() {
-    }
-
-    @Test
-    void updateCell() {
-    }
 }

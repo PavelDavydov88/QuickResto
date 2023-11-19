@@ -1,7 +1,8 @@
 package com.example.quickresto.controller;
 
-import com.example.quickresto.service.MathEvaluatorServiceImpl;
-import lombok.AllArgsConstructor;
+import com.example.quickresto.model.Cell;
+import com.example.quickresto.service.MathEvaluatorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,15 +13,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TableController {
 
-    MathEvaluatorServiceImpl mathEvaluatorService;
+    private final MathEvaluatorService mathEvaluatorService;
 
     @GetMapping("/table")
     public String getTable(Model model) {
-        model.addAttribute("table", mathEvaluatorService.getTable());
-        return "table";
+        Cell[][] table = mathEvaluatorService.getTable();
+        model.addAttribute("table", table);
+        return "tableView";
     }
 
     @PostMapping("/updateCell/{row}/{col}")
